@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\V1\AuthController;
+use App\Http\Controllers\V1\CartController;
 use App\Http\Controllers\V1\CategoryController;
 use App\Http\Controllers\V1\ProductController;
 use Illuminate\Http\Request;
@@ -20,7 +21,12 @@ Route::controller(AuthController::class)
             ->except('update');
             Route::post('/products/{product}/update', [ProductController::class,'update']);
 
-//            Route::apiResource('carts')
+            Route::apiResource('carts', CartController::class)
+            ->except(['show', 'update', 'destroy']);
+
+            Route::put('carts/{cartItem}', [CartController::class, 'update']);
+
+            Route::delete('carts/{cartItem}', [CartController::class, 'destroy']);
         });
 
 });
