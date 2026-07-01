@@ -15,7 +15,10 @@ Route::controller(AuthController::class)
         Route::middleware('auth:sanctum')->group(function () {
             Route::post('/logout', 'logout');
             Route::apiResource('categories', CategoryController::class);
-            Route::apiResource('products', ProductController::class);
+
+            Route::apiResource('products', ProductController::class)
+            ->except('update');
+            Route::post('/products/{product}/update', [ProductController::class,'update']);
         });
 
 });

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ProductController extends Controller
@@ -58,7 +59,15 @@ class ProductController extends Controller
             'stock' => 'required|integer|min:0',
             'description' => 'nullable|string|max:4000',
             'slug' => 'unique:products,slug',
+            'image' => 'nullable|file|image|mimes:jpg,jpeg,png|max:2048'
         ]);
+
+        $imagePath = null;
+
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')
+                ->store('products', 'public');
+        }
 
         $product = Product::create([
             'category_id' => $request->category_id,
@@ -67,6 +76,7 @@ class ProductController extends Controller
             'price' => $request->price,
             'stock' => $request->stock,
             'description' => $request->description,
+            'image' => $imagePath
         ]);
 
         return response()->json([
@@ -98,7 +108,21 @@ class ProductController extends Controller
             'price' => 'sometimes|integer|min:0',
             'stock' => 'sometimes|integer|min:0',
             'description' => 'nullable|string|max:4000',
+            'image' => 'nullable|file|image|mimes:jpg,jpeg,png|max:2048'
         ]);
+
+        $imagePath = null;
+
+        if ($request->hasFile('image')) {
+
+            if ($product->image) {
+                Storage::disk('public')->delete($product->image);
+            }
+
+
+            $imagePath = $request->file('image')
+                ->store('products', 'public');
+        }
 
         $product->update([
             'category_id' => $request->category_id ?? $product->category_id,
@@ -109,7 +133,7 @@ class ProductController extends Controller
             'price' => $request->price ?? $product->price,
             'stock' => $request->stock ?? $product->stock,
             'description' => $request->description ?? $product->description,
-            'image' => $request->image ?? $product->image,
+            'image' => $imagePath ?? $product->image,
         ]);
 
         return response()->json([
