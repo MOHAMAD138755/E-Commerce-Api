@@ -13,10 +13,37 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $product =  Product::with('category')->latest()->paginate(10);
-        return ProductResource::collection($product);
+        $query = Product::with('category');
+
+        if($request->filled('search')){
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        if ($request->filled('min_price')) {
+            $query->where('price', '>=', $request->min_price);
+        }
+
+        if ($request->filled('max_price')) {
+            $query->where('price', '<=', $request->max_price);
+        }
+
+        // Sort
+        if ($request->sort === 'price_asc') {
+            $query->orderBy('price');
+        }
+
+        if ($request->sort === 'price_desc') {
+            $query->orderByDesc('price');
+        }
+
+        $products = $query->paginate(10);
+
+        return ProductResource::collection($products);
     }
 
     /**
