@@ -25,6 +25,11 @@ class User extends Authenticatable
         'password',
     ];
 
+    public function cart()
+    {
+        return $this->hasOne(Cart::class);
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *
