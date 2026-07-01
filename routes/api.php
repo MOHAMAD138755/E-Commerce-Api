@@ -19,6 +19,8 @@ Route::controller(AuthController::class)
             Route::apiResource('products', ProductController::class)
             ->except('update');
             Route::post('/products/{product}/update', [ProductController::class,'update']);
+
+//            Route::apiResource('carts')
         });
 
 });
